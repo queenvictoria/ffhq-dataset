@@ -373,8 +373,11 @@ def run(tasks, **download_kwargs):
         specs += tfrecords_specs + [license_specs['tfrecords']]
 
     if len(specs):
-        print('Downloading %d files...' % len(specs))
         np.random.shuffle(specs) # to make the workload more homogeneous
+        if download_kwargs['max_images'] > 0:
+            specs = specs[:download_kwargs['max_images']]
+            del download_kwargs['max_images']
+        print('Downloading %d files...' % len(specs))
         download_files(specs, **download_kwargs)
 
     if 'align' in tasks:
@@ -396,6 +399,7 @@ def run_cmdline(argv):
     parser.add_argument('--timing_window',      help='samples for estimating download eta (default: 50)', type=int, default=50, metavar='LEN')
     parser.add_argument('--chunk_size',         help='chunk size for each download thread (default: 128)', type=int, default=128, metavar='KB')
     parser.add_argument('--num_attempts',       help='number of download attempts per file (default: 10)', type=int, default=10, metavar='NUM')
+    parser.add_argument('--max_images',         help='maximum number of images. 0 means all. (default: 0)', type=int, default=0, metavar='MAX')
 
     args = parser.parse_args()
     if not args.tasks:
