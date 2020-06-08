@@ -354,6 +354,9 @@ def recreate_aligned_images(json_data, dst_dir='realign1024x1024', output_size=1
 def run(tasks, **download_kwargs):
     if not os.path.isfile(json_spec['file_path']) or not os.path.isfile('LICENSE.txt'):
         print('Downloading JSON metadata...')
+        del download_kwargs['max_images']
+        del download_kwargs['random_seed']
+
         download_files([json_spec, license_specs['json']], **download_kwargs)
 
     print('Parsing JSON metadata...')
