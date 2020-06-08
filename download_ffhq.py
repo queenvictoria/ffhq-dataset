@@ -81,6 +81,7 @@ def download_file(session, file_spec, stats, chunk_size=128, num_attempts=10):
 
             # Validate.
             if 'file_size' in file_spec and data_size != file_spec['file_size']:
+                print("Filesize mismatch: %d %d" % (file_spec['file_size'], data_size))
                 raise IOError('Incorrect file size', file_path)
             if 'file_md5' in file_spec and data_md5.hexdigest() != file_spec['file_md5']:
                 raise IOError('Incorrect file MD5', file_path)
@@ -373,6 +374,9 @@ def run(tasks, **download_kwargs):
         specs += tfrecords_specs + [license_specs['tfrecords']]
 
     if len(specs):
+        if download_kwargs['random_seed']:
+            np.random.seed(download_kwargs['random_seed'])
+            del download_kwargs['random_seed']
         np.random.shuffle(specs) # to make the workload more homogeneous
         if download_kwargs['max_images'] > 0:
             specs = specs[:download_kwargs['max_images']]
@@ -400,6 +404,7 @@ def run_cmdline(argv):
     parser.add_argument('--chunk_size',         help='chunk size for each download thread (default: 128)', type=int, default=128, metavar='KB')
     parser.add_argument('--num_attempts',       help='number of download attempts per file (default: 10)', type=int, default=10, metavar='NUM')
     parser.add_argument('--max_images',         help='maximum number of images. 0 means all. (default: 0)', type=int, default=0, metavar='MAX')
+    parser.add_argument('--random_seed',         help='random seed useful for always retrieving the same max_images.', type=int, metavar='SEED')
 
     args = parser.parse_args()
     if not args.tasks:
