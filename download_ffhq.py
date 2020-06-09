@@ -70,7 +70,9 @@ def download_file(session, file_spec, stats, chunk_size=128, num_attempts=10):
             # Download.
             data_md5 = hashlib.md5()
             with session.get(file_url, stream=True) as res:
-                res.raise_for_status()
+                if res.status_code > 400:
+                    print(f"ERROR: Status {res.status_code}.")
+                    continue
                 with open(tmp_path, 'wb') as f:
                     for chunk in res.iter_content(chunk_size=chunk_size<<10):
                         f.write(chunk)
