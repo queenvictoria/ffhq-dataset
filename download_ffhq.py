@@ -377,7 +377,7 @@ def run(tasks, **download_kwargs):
         specs += tfrecords_specs + [license_specs['tfrecords']]
 
     if len(specs):
-        if download_kwargs['random_seed']:
+        if 'random_seed' in download_kwargs:
             np.random.seed(download_kwargs['random_seed'])
             del download_kwargs['random_seed']
         np.random.shuffle(specs) # to make the workload more homogeneous
